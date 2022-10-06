@@ -168,4 +168,17 @@ class AlunoRepositoryTest {
         assertEquals(idade, alunoList.get(0).getIdade());
     }
 
+    @Test
+    @DisplayName("Deve verificar idade e nome")
+    void deveVerificarNomeEIdade(){
+        Aluno aluno2 = new Aluno(3L, "Augusto", 23L,
+                "435435433867679883", "Rua teste3 1");
+        alunoRepository.save(aluno2);
+        Aluno resultado = alunoRepository.findByNomeAndIdade("Augusto",23L);
+        assertAll(
+                () -> assertEquals("Augusto", resultado.getNome()),
+                () -> assertEquals(23L, resultado.getIdade())
+        );
+    }
+
 }

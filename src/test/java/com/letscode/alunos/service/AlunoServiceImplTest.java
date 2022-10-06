@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -103,10 +104,10 @@ class AlunoServiceImplTest {
         var resultado = alunoService.buscaTodos();
 
         // assertAll vs any assertEquals
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(alunos, resultado),
-                () -> Assertions.assertEquals(1, resultado.size()), //falha
-                () -> Assertions.assertEquals("Aluno Teste", resultado.get(0).getNome()) //terceiro
+        assertAll(
+                () -> assertEquals(alunos, resultado),
+                () -> assertEquals(1, resultado.size()), //falha
+                () -> assertEquals("Aluno Teste", resultado.get(0).getNome()) //terceiro
         );
 //        Assertions.assertEquals(alunos, resultado); //faz o primeiro
 //        Assertions.assertEquals(2, resultado.size()); // falha
@@ -129,7 +130,7 @@ class AlunoServiceImplTest {
 
         var resultado = alunoService.delete(aluno.getId());
 
-        Assertions.assertEquals("Aluno deletado", resultado);
+        assertEquals("Aluno deletado", resultado);
     }
 
     @Test
@@ -143,7 +144,7 @@ class AlunoServiceImplTest {
 
         var resultado = alunoService.alterarAluno(aluno.getId(), "Superman");
 
-        Assertions.assertEquals("Superman", resultado.getNome());
+        assertEquals("Superman", resultado.getNome());
     }
 
 
@@ -153,7 +154,7 @@ class AlunoServiceImplTest {
         Exception exception = assertThrows(Exception.class,
                 () -> alunoService.delete(aluno.getId()));
 
-        Assertions.assertEquals("Aluno não foi encontrado", exception.getMessage());
+        assertEquals("Aluno não foi encontrado", exception.getMessage());
     }
 
     @Test
@@ -162,7 +163,7 @@ class AlunoServiceImplTest {
         Exception exception = assertThrows(Exception.class,
                 () -> alunoService.alterarAluno(aluno.getId(), "Batman"));
 
-        Assertions.assertEquals("Aluno não foi encontrado", exception.getMessage());
+        assertEquals("Aluno não foi encontrado", exception.getMessage());
     }
 
     @Test
@@ -171,7 +172,7 @@ class AlunoServiceImplTest {
         Mockito.when(alunoRepository.findByNome(anyString())).thenReturn(List.of(aluno));
 
         List<Aluno> alunos = alunoService.buscaPorNome(aluno.getNome());
-        Assertions.assertEquals("Aluno Teste", alunos.get(0).getNome());
+        assertEquals("Aluno Teste", alunos.get(0).getNome());
     }
 
     @Test
@@ -179,7 +180,19 @@ class AlunoServiceImplTest {
     void deveBuscarOAlunoSomentoPeloNome() {
         Mockito.when(alunoRepository.findByNome(anyString())).thenReturn(List.of(aluno));
         List<Aluno> alunos = alunoService.filter(aluno.getNome(), null, null);
-        Assertions.assertEquals("Aluno Teste", alunos.get(0).getNome());
+        assertEquals("Aluno Teste", alunos.get(0).getNome());
+    }
+
+    @Test
+    @DisplayName("Deve buscar ṕela idade")
+    void deveBuscarPelaIdade(){
+        Mockito.when(alunoRepository.findAllByIdade(anyLong())).thenReturn(List.of(aluno));
+        List<Aluno> alunos = alunoService.filter(null, aluno.getIdade(), null);
+        assertAll(
+                () -> assertEquals("Aluno Teste", alunos.get(0).getNome()),
+                () -> assertEquals(1L, alunos.get(0).getId()),
+                () -> assertEquals("Rua teste", alunos.get(0).getEndereco())
+        );
     }
 
 

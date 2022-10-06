@@ -16,14 +16,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -201,6 +201,35 @@ class AlunoControllerTest {
     }
 
 
+    @Test
+    @DisplayName("Deve excluir o aluno")
+    void excluiAluno() throws Exception{
+        when(alunoService.delete(anyLong())).thenReturn("Aluno deletado");
+
+        mockMvc.perform(delete("/alunos/{id}",aluno.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    @DisplayName("Deve alterar o aluno")
+    void alteracaoAluno() throws Exception{
+        when(alunoService.alterarAluno(anyLong(),anyString())).thenReturn(aluno);
+
+        MvcResult resultado = mockMvc.perform(patch("/alunos/{id}/{nome}",aluno.getId(),aluno.getNome())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isPartialContent())
+                .andReturn();
+
+        String response = resultado.getResponse().getContentAsString();
+
+        String json = objectMapper.writeValueAsString(aluno);
+
+        Assertions.assertEquals(json,response);
+
+    }
 
 
 
